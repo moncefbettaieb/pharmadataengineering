@@ -1,5 +1,4 @@
-{{  config(materialized='table',
-    unique_key='cip_code') }}
+{{  config(materialized='table') }}
 
 WITH raw_data AS (
     SELECT
@@ -21,7 +20,6 @@ WITH raw_data AS (
         first_insertion
         
     FROM {{ source('pharma_sources', 'raw_pharma_gdd') }}
-    -- Ici, on ne supprime ni on ne purge la table source
 )
 
 SELECT

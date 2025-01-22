@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.providers.google.cloud.operators.cloud_run import CloudRunJobStartOperator
+from airflow.providers.google.cloud.operators.cloud_run import CloudRunExecuteJobOperator
 from airflow.utils.dates import days_ago
 
 default_args = {
@@ -13,16 +13,17 @@ default_args = {
 with DAG(
     'cloud_run_dag',
     default_args=default_args,
-    description='Trigger Cloud Run jobs',
+    description='Run dbt job on Cloud Run',
     schedule_interval=None,
     start_date=days_ago(1),
     catchup=False,
 ) as dag:
 
-    run_job = CloudRunJobStartOperator(
-        task_id="trigger_cloud_run_job",
-        location="europe-west1",
-        project_id="your-gcp-project-id",
-        job_name="your-cloud-run-job",
-        body={},  # Spécifie les paramètres si nécessaires
+    run_dbt_job = CloudRunExecuteJobOperator(
+        task_id="execute_dbt_job",
+        region='europe-west9',
+        project_id='fournisseur-data',
+        job_name="pharma-dbt-job",
+        timeout_seconds=300,
+        gcp_conn_id='google_cloud_default'
     )

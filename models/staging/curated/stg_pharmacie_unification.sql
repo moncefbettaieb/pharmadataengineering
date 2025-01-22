@@ -4,7 +4,6 @@
     ]) }}
 
 WITH unified AS (
-    -- On normalise les colonnes pour qu'elles aient le même nom
     SELECT
         gdd.cip_code,
         gdd.brand,
