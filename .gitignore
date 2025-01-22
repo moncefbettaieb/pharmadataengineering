@@ -1,0 +1,9 @@
+dbt/.user.yml
+dbt/logs/dbt.log
+dbt/target/*
+dbt/package-lock.yml
+dbt/dbt_packages/*
+dbt/.DS_Store
+dbt/seeds/cleaned_google_product_taxonomy.csv
+dbt/seeds/taxonomy-with-ids.fr-FR.txt
+logs/dbt.log

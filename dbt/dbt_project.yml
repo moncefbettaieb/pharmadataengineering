@@ -1,0 +1,25 @@
+name: 'pharma_dbt_project'
+version: '1.0.0'
+
+config-version: 2
+
+profile: 'pharma_project'
+
+# Emplacements
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+# Paramétrage des modèles
+models:
+  pharma_dbt_project:
+    +materialized: table
+    staging:
+    marts:
+
+seeds:
+  pharma_dbt_project:
+    +delimiter: ";"

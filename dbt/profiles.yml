@@ -1,0 +1,31 @@
+pharma_project:
+  outputs:
+    dev:
+      type: postgres
+      host: 34.155.219.14
+      user: pharma_user
+      password: salgado
+      dbname: pharma_data_engineering
+      schema: public
+      port: 5432
+      threads: 4
+    uat:
+      type: postgres
+      host: 34.155.219.14
+      user: pharma_user
+      password: salgado
+      dbname: pharma_data_engineering
+      schema: public
+      port: 5432
+      threads: 4
+# TODO: modify prod db connection
+    prod:
+      type: postgres
+      host: 34.155.219.14
+      user: pharma_user
+      password: salgado
+      dbname: pharma_data_engineering
+      schema: public
+      port: 5432
+      threads: 4
+  target: dev

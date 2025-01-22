@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: pharma_sources
+    schema: public
+    tables:
+      - name: raw_pharma_gdd
+        identifier: raw_pharma_gdd
+        description: "Table brute scrappée (pharma_gdd)"
+      - name: raw_pharmacie_du_centre
+        identifier: raw_pharmacie_du_centre
+        description: "Table brute scrappée (pharmacie_du_centre)"
+

@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: final_pharma_table
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: ['cip_code']
+    columns:
+      - name: cip_code
+        tests:
+          - not_null
+      - name: brand
+        tests:
+          - not_null
+      - name: title
+        tests:
+          - not_null
+      - name: categorie
+        tests:
+          - not_null
+
+  - name: dim_product_taxonomy
+    columns:
+      - name: taxonomy_id
+        tests:
+          - not_null
+          - unique
+      - name: taxonomy_name
+        tests:
+          - not_null
+      - name: category
+        tests:
+          - not_null
