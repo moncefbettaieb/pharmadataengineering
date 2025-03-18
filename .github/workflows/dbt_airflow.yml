@@ -54,6 +54,7 @@ jobs:
             --region=${{ secrets.GCP_REGION }} \
             --task-timeout=3600 \
             --set-env-vars="DBT_PROFILE=${{ secrets.DBT_PROFILE }}" \
+            --set-env-vars="TARGET_ENV=uat" \
             --args="dbt run --target uat --exclude intermediate.inter_similarity_scores_categorie_taxonomy"
 
   deploy-airflow-dags:
@@ -74,3 +75,10 @@ jobs:
       - name: Sync DAGs to Cloud Storage
         run: |
           gcloud storage cp -r airflow/dags/ gs://${{ secrets.AIRFLOW_BUCKET }}/
+      
+      - name: Restart Airflow on VM
+        run: |
+          gcloud compute ssh ${{ secrets.GCP_SA_EMAIL }}@${{ secrets.UAT_VM_NAME }} \
+            --project ${{ secrets.GCP_PROJECT_ID }} \
+            --zone ${{ secrets.GCP_ZONE }} \
+            --command "sudo systemctl restart airflow-scheduler && sudo systemctl restart airflow-webserver"
