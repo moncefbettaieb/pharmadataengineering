@@ -78,8 +78,6 @@ jobs:
       
       - name: Restart Airflow on VM
         run: |
-          gcloud compute ssh \
+          gcloud compute ssh  mbettaieb@${{ secrets.UAT_VM_NAME }} \
             --project ${{ secrets.GCP_PROJECT_ID }} \
-            --zone ${{ secrets.GCP_ZONE }} \
-            ${{ secrets.UAT_VM_NAME }} \
             --command "sudo systemctl restart airflow-scheduler && sudo systemctl restart airflow-webserver"
