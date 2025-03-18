@@ -77,9 +77,9 @@ jobs:
           gcloud storage cp -r airflow/dags/ gs://${{ secrets.AIRFLOW_BUCKET }}/
       
       - name: Restart Airflow on VM
-      run: |
-        gcloud compute ssh \
-          --project ${{ secrets.GCP_PROJECT_ID }} \
-          --zone ${{ secrets.GCP_ZONE }} \
-          ${{ secrets.UAT_VM_NAME }} \
-          --command "sudo systemctl restart airflow-scheduler && sudo systemctl restart airflow-webserver"
+        run: |
+          gcloud compute ssh \
+            --project ${{ secrets.GCP_PROJECT_ID }} \
+            --zone ${{ secrets.GCP_ZONE }} \
+            ${{ secrets.UAT_VM_NAME }} \
+            --command "sudo systemctl restart airflow-scheduler && sudo systemctl restart airflow-webserver"
