@@ -74,7 +74,7 @@ jobs:
 
       - name: Sync DAGs to Cloud Storage
         run: |
-          gcloud storage cp -r airflow/dags/ gs://${{ secrets.AIRFLOW_BUCKET }}/
+          gcloud storage cp -r airflow/dags gs://${{ secrets.AIRFLOW_BUCKET }}/
       
       - name: Restart Airflow on VM
         run: |
