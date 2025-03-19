@@ -80,4 +80,5 @@ jobs:
         run: |
           gcloud compute ssh  mbettaieb@${{ secrets.UAT_VM_NAME }} \
             --project ${{ secrets.GCP_PROJECT_ID }} \
+            --zone ${{ secrets.GCP_ZONE }} \
             --command "sudo systemctl restart airflow-scheduler && sudo systemctl restart airflow-webserver"
