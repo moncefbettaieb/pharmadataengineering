@@ -122,17 +122,8 @@ with DAG('pharma_data_full_pipeline_uat',
         "modules.scrappers.save_sitemaps_links_to_mongo", 
         "uat")
     
-    airbyte_pharmagdd_mongo_to_postgre = AirbyteTriggerSyncOperator(
-        task_id='airbyte_pharmagdd_mongo_to_postgre_uat',
-        airbyte_conn_id='airbyte_conn',
-        connection_id='3a0e80d8-1477-4dc4-b493-8356ef05ea67',
-        asynchronous=False,
-        timeout=3600,
-        wait_seconds=3
-    )
-
-    airbyte_pharmacieducentre_mongo_to_postgre = AirbyteTriggerSyncOperator(
-        task_id='airbyte_pharmacieducentre_mongo_to_postgre_uat',
+    airbyte_mongo_to_postgre = AirbyteTriggerSyncOperator(
+        task_id='airbyte_mongo_to_postgre_uat',
         airbyte_conn_id='airbyte_conn',
         connection_id='3a0e80d8-1477-4dc4-b493-8356ef05ea67',
         asynchronous=False,
@@ -159,10 +150,10 @@ with DAG('pharma_data_full_pipeline_uat',
     airbyte_postgre_to_firestore = AirbyteTriggerSyncOperator(
         task_id='airbyte_postgre_to_firestore_uat',
         airbyte_conn_id='airbyte_conn',
-        connection_id='3a0e80d8-1477-4dc4-b493-8356ef05ea67',
+        connection_id='f5d9db1b-8956-4413-8161-9c4d0df6aee7',
         asynchronous=False,
         timeout=3600,
         wait_seconds=3
     )
 
-    save_sitemaps_links_to_mongo >> get_exec_date >> clean_exec_date >> run_pharma_scrapper >> airbyte_pharmagdd_mongo_to_postgre >> airbyte_pharmacieducentre_mongo_to_postgre >> dbt_seed_uat >> dbt_run_uat >> dbt_test_uat >> run_save_images >> airbyte_postgre_to_firestore
+    save_sitemaps_links_to_mongo >> get_exec_date >> clean_exec_date >> run_pharma_scrapper >> airbyte_mongo_to_postgre >> dbt_seed_uat >> dbt_run_uat >> dbt_test_uat >> run_save_images >> airbyte_postgre_to_firestore
