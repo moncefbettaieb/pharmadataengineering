@@ -25,15 +25,14 @@ WITH raw_data AS (
         "Nombre_d_unites" as nombre_d_unites, 
         "Indication___Contre_indication" as indication_contre_indication
     FROM {{ source('pharma_sources', 'raw_pharmacie_du_centre') }}
-    {{ filter_last_update('raw_pharmacie_du_centre', 'processed_time') }}
 )
 
 SELECT
     brand, 
-    title,  
+    title::TEXT AS title,  
     source,  
     cip_code, 
-    categorie,
+    categorie::TEXT AS categorie,
     image_src, 
     long_desc, 
     short_desc, 
@@ -42,9 +41,9 @@ SELECT
     conditionnement, 
     processed_time, 
     substance_active, 
-    sous_categorie_1, 
-    sous_categorie_2, 
-    sous_categorie_3,
+    sous_categorie_1::TEXT AS sous_categorie_1, 
+    sous_categorie_2::TEXT AS sous_categorie_2, 
+    sous_categorie_3::TEXT AS sous_categorie_3,
     CONCAT(categorie, ' ', sous_categorie_1, ' ', sous_categorie_2, ' ', sous_categorie_3) AS combined_category,
     nature_de_produit, 
     nombre_d_unites, 

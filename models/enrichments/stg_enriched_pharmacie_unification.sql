@@ -5,7 +5,6 @@ WITH unified AS (
         unif.*,
         dim_ct.categorie_id
     FROM {{ ref('stg_pharmacie_unification') }} unif
-    {{ filter_last_update('unif', 'last_update') }}
     LEFT JOIN {{ ref('dim_pharma_categorie') }} dim_ct
     ON unif.combined_category = dim_ct.combined_category
 ),

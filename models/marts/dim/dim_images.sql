@@ -12,7 +12,6 @@ WITH unified AS (
         image_url,
         last_update
     FROM {{ ref('stg_unified_images') }}
-    {{ filter_last_update('stg_unified_images', 'last_update') }}
 )
 
 , enumerated AS (

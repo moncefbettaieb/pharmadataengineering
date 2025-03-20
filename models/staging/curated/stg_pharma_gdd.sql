@@ -21,7 +21,6 @@ WITH raw_data AS (
         image_links,
         processed_time
     FROM {{ source('pharma_sources', 'raw_pharma_gdd') }}
-    {{ filter_last_update('raw_pharma_gdd', 'processed_time') }}
 )
 
 SELECT
@@ -34,10 +33,10 @@ SELECT
     sous_categorie_2,
     short_desc,
     long_desc,
-    posologie,
-    composition,
+    posologie::TEXT AS posologie,
+    composition::TEXT AS composition,
     conditionnement,
-    contre_indication,
+    contre_indication::TEXT AS contre_indication,
     image_links,
     processed_time,
     categorie || ' ' || sous_categorie_1 || ' ' || sous_categorie_2 AS combined_category,

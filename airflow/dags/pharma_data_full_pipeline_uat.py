@@ -125,7 +125,7 @@ with DAG('pharma_data_full_pipeline_uat',
     airbyte_mongo_to_postgre = AirbyteTriggerSyncOperator(
         task_id='airbyte_mongo_to_postgre_uat',
         airbyte_conn_id='airbyte_conn',
-        connection_id='3a0e80d8-1477-4dc4-b493-8356ef05ea67',
+        connection_id='bfc02575-4532-4dcc-9b9f-1078a10e8a42',
         asynchronous=False,
         timeout=3600,
         wait_seconds=3
@@ -151,7 +151,7 @@ with DAG('pharma_data_full_pipeline_uat',
     airbyte_postgre_to_firestore = AirbyteTriggerSyncOperator(
         task_id='airbyte_postgre_to_firestore_uat',
         airbyte_conn_id='airbyte_conn',
-        connection_id='f5d9db1b-8956-4413-8161-9c4d0df6aee7',
+        connection_id='ff659b4a-2a4a-4ad0-98e1-3242693357bf',
         asynchronous=False,
         timeout=3600,
         wait_seconds=3

@@ -13,7 +13,6 @@ WITH raw_categories AS (
         NULL as sous_categorie_3,
         last_update
     FROM {{ ref('stg_pharma_gdd') }}
-    {{ filter_last_update('stg_pharma_gdd', 'last_update') }}
     UNION
     SELECT DISTINCT
         categorie,
@@ -22,7 +21,6 @@ WITH raw_categories AS (
         sous_categorie_3,
         last_update
     FROM {{ ref('stg_pharmacie_du_centre') }}
-    {{ filter_last_update('stg_pharmacie_du_centre', 'last_update') }}
 )
 
 SELECT
