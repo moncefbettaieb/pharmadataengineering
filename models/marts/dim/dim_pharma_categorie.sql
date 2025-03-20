@@ -1,4 +1,6 @@
-{{ config(materialized='table',
+{{ config(
+    materialized='incremental',
+    incremental_strategy='append',
     post_hook=[
         create_gin_index(this, 'combined_category')
     ]) }}
@@ -8,14 +10,16 @@ WITH raw_categories AS (
         categorie,
         sous_categorie_1,
         sous_categorie_2,
-        NULL as sous_categorie_3
+        NULL as sous_categorie_3,
+        last_update
     FROM {{ ref('stg_pharma_gdd') }}
     UNION
     SELECT DISTINCT
         categorie,
         sous_categorie_1,
         sous_categorie_2,
-        sous_categorie_3
+        sous_categorie_3,
+        last_update
     FROM {{ ref('stg_pharmacie_du_centre') }}
 )
 
@@ -25,7 +29,8 @@ SELECT
     sous_categorie_1,
     sous_categorie_2,
     sous_categorie_3,
-    categorie || ' ' || sous_categorie_1 || ' ' || sous_categorie_2 || ' ' || sous_categorie_3 as combined_category
+    categorie || ' ' || sous_categorie_1 || ' ' || sous_categorie_2 || ' ' || sous_categorie_3 as combined_category,
+    last_update
 FROM raw_categories
 WHERE categorie IS NOT NULL
   AND categorie <> ''

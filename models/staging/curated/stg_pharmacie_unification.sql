@@ -66,7 +66,8 @@ deduplicated AS (
         COALESCE((ARRAY_AGG(indication_contre_indication))[0], COALESCE((ARRAY_AGG(indication_contre_indication))[1], (ARRAY_AGG(indication_contre_indication))[2])) AS indication_contre_indication,
         COALESCE((ARRAY_AGG(posologie))[0], COALESCE((ARRAY_AGG(posologie))[1], (ARRAY_AGG(posologie))[2])) AS posologie,
         COALESCE((ARRAY_AGG(composition))[0], COALESCE((ARRAY_AGG(composition))[1], (ARRAY_AGG(composition))[2])) AS composition,
-        COALESCE((ARRAY_AGG(contre_indication))[0], COALESCE((ARRAY_AGG(contre_indication))[1], (ARRAY_AGG(contre_indication))[2])) AS contre_indication
+        COALESCE((ARRAY_AGG(contre_indication))[0], COALESCE((ARRAY_AGG(contre_indication))[1], (ARRAY_AGG(contre_indication))[2])) AS contre_indication,
+        CURRENT_TIMESTAMP AS last_update
     FROM unified
     GROUP BY cip_code
 )

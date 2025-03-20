@@ -118,42 +118,43 @@ with DAG('pharma_data_full_pipeline_uat',
     execution_date = "{{ ti.xcom_pull(task_ids='clean_execution_date') }}"
 
     save_sitemaps_links_to_mongo = create_cloud_run_task(
-        "save_sitemaps_links_to_mongo_uat", 
+        "save_sitemaps_links_to_mongo", 
         "modules.scrappers.save_sitemaps_links_to_mongo", 
         "uat")
     
     airbyte_mongo_to_postgre = AirbyteTriggerSyncOperator(
         task_id='airbyte_mongo_to_postgre_uat',
         airbyte_conn_id='airbyte_conn',
-        connection_id='3a0e80d8-1477-4dc4-b493-8356ef05ea67',
+        connection_id='bfc02575-4532-4dcc-9b9f-1078a10e8a42',
         asynchronous=False,
         timeout=3600,
         wait_seconds=3
     )
 
     run_pharma_scrapper = create_cloud_run_task(
-        "pharma_scrapper_uat",
+        "pharma_scrapper",
         "modules.scrappers.pharma_scrapper",
         "uat",
         execution_date=execution_date
     )
 
     dbt_seed_uat = create_cloud_run_task_dbt("seed", "seed", "uat")
+    dbt_snapshot_uat = create_cloud_run_task_dbt("snapshot", "snapshot", "uat")
     dbt_run_uat = create_cloud_run_task_dbt("run", "run", "uat")
     dbt_test_uat = create_cloud_run_task_dbt("test", "test", "uat")
 
     run_save_images = create_cloud_run_task(
-        "run_save_images_uat", 
+        "run_save_images", 
         "modules.download_images.save_to_gcs", 
         "uat")
     
     airbyte_postgre_to_firestore = AirbyteTriggerSyncOperator(
         task_id='airbyte_postgre_to_firestore_uat',
         airbyte_conn_id='airbyte_conn',
-        connection_id='f5d9db1b-8956-4413-8161-9c4d0df6aee7',
+        connection_id='ff659b4a-2a4a-4ad0-98e1-3242693357bf',
         asynchronous=False,
         timeout=3600,
         wait_seconds=3
     )
 
-    save_sitemaps_links_to_mongo >> get_exec_date >> clean_exec_date >> run_pharma_scrapper >> airbyte_mongo_to_postgre >> dbt_seed_uat >> dbt_run_uat >> dbt_test_uat >> run_save_images >> airbyte_postgre_to_firestore
+    save_sitemaps_links_to_mongo >> get_exec_date >> clean_exec_date >> run_pharma_scrapper >> airbyte_mongo_to_postgre >> dbt_seed_uat >> dbt_snapshot_uat >> dbt_run_uat >> dbt_test_uat >> run_save_images >> airbyte_postgre_to_firestore

@@ -33,7 +33,8 @@ with DAG('dbt_full_pipeline',
          catchup=False) as dag:
     
     uat_seed = create_cloud_run_task("seed", "seed", "uat")
+    dbt_snapshot_uat = create_cloud_run_task("snapshot", "snapshot", "uat")
     uat_run = create_cloud_run_task("run", "run", "uat")
     uat_test = create_cloud_run_task("test", "test", "uat")
 
-    uat_seed >> uat_run >> uat_test
+    uat_seed >> dbt_snapshot_uat >> uat_run >> uat_test

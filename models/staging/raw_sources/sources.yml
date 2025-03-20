@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: pharma_sources
-    schema: public
+    schema: "{{ target.schema }}"
     tables:
       - name: raw_pharma_gdd
         identifier: raw_pharma_gdd
