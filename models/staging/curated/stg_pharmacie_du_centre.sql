@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='incremental',
+    incremental_strategy='append'
+) }}
 
 WITH raw_data AS (
     SELECT
@@ -10,11 +13,10 @@ WITH raw_data AS (
         image_src, 
         long_desc, 
         short_desc, 
-        last_update, 
         "Age_minimum" as age_minimum,
         product_price, 
         "Conditionnement" as conditionnement, 
-        first_insertion, 
+        processed_time, 
         "Substance_active" as substance_active, 
         sous_categorie_1, 
         sous_categorie_2, 
@@ -23,6 +25,7 @@ WITH raw_data AS (
         "Nombre_d_unites" as nombre_d_unites, 
         "Indication___Contre_indication" as indication_contre_indication
     FROM {{ source('pharma_sources', 'raw_pharmacie_du_centre') }}
+    {{ filter_last_update('raw_pharmacie_du_centre', 'processed_time') }}
 )
 
 SELECT
@@ -37,18 +40,18 @@ SELECT
     age_minimum,
     product_price, 
     conditionnement, 
-    first_insertion, 
+    processed_time, 
     substance_active, 
     sous_categorie_1, 
     sous_categorie_2, 
     sous_categorie_3,
-    categorie || ' ' || sous_categorie_1 || ' ' || sous_categorie_2 || ' ' || sous_categorie_3 as combined_category,
+    CONCAT(categorie, ' ', sous_categorie_1, ' ', sous_categorie_2, ' ', sous_categorie_3) AS combined_category,
     nature_de_produit, 
     nombre_d_unites, 
     indication_contre_indication,
-    CAST((last_update->>'update') AS TIMESTAMP) AS last_update
+    CURRENT_TIMESTAMP AS last_update
 FROM raw_data
 WHERE cip_code IS NOT NULL
-AND title IS NOT NULL
-AND brand IS NOT NULL
-AND categorie IS NOT NULL
+  AND title IS NOT NULL
+  AND brand IS NOT NULL
+  AND categorie IS NOT NULL

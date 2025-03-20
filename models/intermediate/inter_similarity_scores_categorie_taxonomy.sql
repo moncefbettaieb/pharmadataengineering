@@ -8,7 +8,8 @@ WITH combined_pharmacie AS (
         sous_categorie_1,
         sous_categorie_2,
         sous_categorie_3,
-        combined_category
+        combined_category,
+        last_update
     FROM {{ ref('dim_pharma_categorie') }}
     WHERE categorie IS NOT NULL
     AND combined_category IS NOT NULL
@@ -38,6 +39,7 @@ combined_taxonomy AS (
         t.sub_category2,
         t.sub_category3,
         t.combined_taxonomy,
-        SIMILARITY(p.combined_category, t.combined_taxonomy) AS similarity_score
+        SIMILARITY(p.combined_category, t.combined_taxonomy) AS similarity_score,
+        p.last_update
     FROM combined_pharmacie p
     CROSS JOIN combined_taxonomy t
