@@ -157,4 +157,4 @@ with DAG('pharma_data_full_pipeline_uat',
         wait_seconds=3
     )
 
-    save_sitemaps_links_to_mongo >> get_exec_date >> clean_exec_date >> run_pharma_scrapper >> airbyte_mongo_to_postgre >> dbt_seed_uat >> dbt_run_uat >> dbt_test_uat >> run_save_images >> airbyte_postgre_to_firestore
+    save_sitemaps_links_to_mongo >> get_exec_date >> clean_exec_date >> run_pharma_scrapper >> airbyte_mongo_to_postgre >> dbt_seed_uat >> dbt_snapshot_uat >> dbt_run_uat >> dbt_test_uat >> run_save_images >> airbyte_postgre_to_firestore
