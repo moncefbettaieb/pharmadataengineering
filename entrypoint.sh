@@ -7,6 +7,9 @@ case "$1" in
   "seed")
     dbt seed --profile pharma_project --profiles-dir /home/dbtuser/.dbt --target $target
     ;;
+  "snapshot")
+    dbt snapshot --profile pharma_project --profiles-dir /home/dbtuser/.dbt --target $target
+    ;;
   "run")
     dbt run --profile pharma_project --profiles-dir /home/dbtuser/.dbt --target $target ${@:2}
     ;;
