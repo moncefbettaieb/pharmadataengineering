@@ -118,7 +118,7 @@ with DAG('pharma_data_full_pipeline_uat',
     execution_date = "{{ ti.xcom_pull(task_ids='clean_execution_date') }}"
 
     save_sitemaps_links_to_mongo = create_cloud_run_task(
-        "save_sitemaps_links_to_mongo_uat", 
+        "save_sitemaps_links_to_mongo", 
         "modules.scrappers.save_sitemaps_links_to_mongo", 
         "uat")
     
@@ -132,7 +132,7 @@ with DAG('pharma_data_full_pipeline_uat',
     )
 
     run_pharma_scrapper = create_cloud_run_task(
-        "pharma_scrapper_uat",
+        "pharma_scrapper",
         "modules.scrappers.pharma_scrapper",
         "uat",
         execution_date=execution_date
@@ -144,7 +144,7 @@ with DAG('pharma_data_full_pipeline_uat',
     dbt_test_uat = create_cloud_run_task_dbt("test", "test", "uat")
 
     run_save_images = create_cloud_run_task(
-        "run_save_images_uat", 
+        "run_save_images", 
         "modules.download_images.save_to_gcs", 
         "uat")
     

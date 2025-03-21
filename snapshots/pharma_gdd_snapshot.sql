@@ -1,10 +1,10 @@
-{% snapshot pharma_gdd_snapshot %}
+{% snapshot snapshot_pharma_gdd %}
     {{
       config(
-        target_schema='pharma_schema_snapshots',
+        target_schema='uat',
         unique_key='cip_code',
         strategy='timestamp',
-        updated_at='processed_time'
+        updated_at='update_at'
       )
     }}
 
@@ -12,7 +12,7 @@
         cip_code,
         title,
         brand,
-        CAST(processed_time AS TIMESTAMP) AS processed_time
+        CAST(_ab_cdc_updated_at AS TIMESTAMP) AS update_at
     FROM {{ source('pharma_sources', 'raw_pharma_gdd') }}
 
 {% endsnapshot %}
