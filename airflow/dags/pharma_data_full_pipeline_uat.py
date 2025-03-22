@@ -125,7 +125,7 @@ with DAG('pharma_data_full_pipeline_uat',
     airbyte_mongo_to_postgre = AirbyteTriggerSyncOperator(
         task_id='airbyte_mongo_to_postgre_uat',
         airbyte_conn_id='airbyte_conn',
-        connection_id='bfc02575-4532-4dcc-9b9f-1078a10e8a42',
+        connection_id='09d58bc3-c83e-4c12-9a31-887398486862',
         asynchronous=False,
         timeout=3600,
         wait_seconds=3
