@@ -37,7 +37,7 @@ SELECT
     image_links,
     processed_time,
     categorie::TEXT || ' ' || sous_categorie_1::TEXT || ' ' || sous_categorie_2::TEXT AS combined_category,
-    COALESCE(update_at, CURRENT_TIMESTAMP) AS last_update
+    COALESCE(updated_at, CURRENT_TIMESTAMP) AS last_update
 FROM last_versions
 WHERE rn = 1
   AND cip_code IS NOT NULL

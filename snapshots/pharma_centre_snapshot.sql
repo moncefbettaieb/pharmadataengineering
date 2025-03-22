@@ -4,7 +4,7 @@
         target_schema="uat",
         unique_key='cip_code',
         strategy='timestamp',
-        updated_at='update_at'
+        updated_at='updated_at'
       )
     }}
 
@@ -28,7 +28,7 @@
         "Nature_de_produit" as nature_de_produit, 
         "Nombre_d_unites" as nombre_d_unites, 
         "Indication___Contre_indication" as indication_contre_indication,
-        CAST(_ab_cdc_updated_at AS TIMESTAMP) as update_at
+        CAST(_ab_cdc_updated_at AS TIMESTAMP) as updated_at
     FROM {{ source('pharma_sources', 'raw_pharmacie_du_centre') }}
 
 {% endsnapshot %}

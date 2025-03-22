@@ -4,7 +4,7 @@
         target_schema='uat',
         unique_key='cip_code',
         strategy='timestamp',
-        updated_at='update_at'
+        updated_at='updated_at'
       )
     }}
 
