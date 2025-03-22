@@ -1,5 +1,8 @@
 
-{{ config(materialized='table') }}
+{{ config(
+    materialized='incremental',
+    incremental_strategy='delete+insert',
+    unique_key='categorie_id, taxonomy_id') }}
 
 WITH combined_pharmacie AS (
     SELECT
@@ -8,8 +11,7 @@ WITH combined_pharmacie AS (
         sous_categorie_1,
         sous_categorie_2,
         sous_categorie_3,
-        combined_category,
-        last_update
+        combined_category
     FROM {{ ref('dim_pharma_categorie') }}
     WHERE categorie IS NOT NULL
         AND categorie <> ''
@@ -44,6 +46,6 @@ combined_taxonomy AS (
         t.sub_category3,
         t.combined_taxonomy,
         SIMILARITY(p.combined_category, t.combined_taxonomy) AS similarity_score,
-        p.last_update
+        CURRENT_TIMESTAMP AS last_update
     FROM combined_pharmacie p
     CROSS JOIN combined_taxonomy t

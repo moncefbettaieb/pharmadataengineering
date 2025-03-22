@@ -1,7 +1,11 @@
-{{ config(materialized='table',
+{{ config(
+    materialized='incremental',
+    incremental_strategy='delete+insert',
+    unique_key='cip_code',
     post_hook=[
         create_index(this, 'cip_code')
-    ]) }}
+    ]
+) }}
 
 WITH unified AS (
     SELECT
@@ -21,8 +25,8 @@ WITH unified AS (
         NULL as indication_contre_indication,
         gdd.posologie,
         gdd.composition,
-        gdd.contre_indication
-    
+        gdd.contre_indication,
+        COALESCE(last_update, CURRENT_TIMESTAMP) AS last_update
     FROM {{ ref('stg_pharma_gdd') }} gdd
 
     UNION ALL
@@ -44,7 +48,8 @@ WITH unified AS (
         centre.indication_contre_indication,
         NULL AS posologie,
         NULL AS composition,
-        NULL AS contre_indication
+        NULL AS contre_indication,
+        COALESCE(last_update, CURRENT_TIMESTAMP) AS last_update
     FROM {{ ref('stg_pharmacie_du_centre') }} centre
 ),
 
@@ -67,7 +72,7 @@ deduplicated AS (
         COALESCE((ARRAY_AGG(posologie))[0], COALESCE((ARRAY_AGG(posologie))[1], (ARRAY_AGG(posologie))[2])) AS posologie,
         COALESCE((ARRAY_AGG(composition))[0], COALESCE((ARRAY_AGG(composition))[1], (ARRAY_AGG(composition))[2])) AS composition,
         COALESCE((ARRAY_AGG(contre_indication))[0], COALESCE((ARRAY_AGG(contre_indication))[1], (ARRAY_AGG(contre_indication))[2])) AS contre_indication,
-        CURRENT_TIMESTAMP AS last_update
+        COALESCE((ARRAY_AGG(last_update))[0], COALESCE((ARRAY_AGG(last_update))[1], CURRENT_TIMESTAMP)) AS last_update
     FROM unified
     GROUP BY cip_code
 )

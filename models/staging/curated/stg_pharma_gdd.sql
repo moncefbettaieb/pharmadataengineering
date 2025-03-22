@@ -1,36 +1,34 @@
 {{ config(
     materialized='incremental',
-    incremental_strategy='append'
+    incremental_strategy='delete+insert',
+    unique_key='cip_code'
 ) }}
 
 WITH raw_data AS (
     SELECT
-        cip_code,
-        title,
-        brand,
-        source,
-        categorie,
-        sous_categorie_1,
-        sous_categorie_2,
-        short_desc,
-        long_desc,
-        posologie,
-        composition,
-        conditionnement,
-        contre_indication,
-        image_links,
-        processed_time
-    FROM {{ source('pharma_sources', 'raw_pharma_gdd') }}
+        *
+    FROM {{ ref('snapshot_pharma_gdd') }}
+),
+
+last_versions AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY cip_code
+            ORDER BY updated_at DESC
+        ) AS rn
+    FROM raw_data
 )
+
 
 SELECT
     cip_code,
     title,
     brand,
     source,
-    categorie,
-    sous_categorie_1,
-    sous_categorie_2,
+    categorie::TEXT AS categorie,
+    sous_categorie_1::TEXT AS sous_categorie_1,
+    sous_categorie_2::TEXT AS sous_categorie_2,
     short_desc,
     long_desc,
     posologie::TEXT AS posologie,
@@ -39,10 +37,11 @@ SELECT
     contre_indication::TEXT AS contre_indication,
     image_links,
     processed_time,
-    categorie || ' ' || sous_categorie_1 || ' ' || sous_categorie_2 AS combined_category,
-    CURRENT_TIMESTAMP AS last_update
-FROM raw_data
-WHERE cip_code IS NOT NULL
+    categorie::TEXT || ' ' || sous_categorie_1::TEXT || ' ' || sous_categorie_2::TEXT AS combined_category,
+    COALESCE(updated_at, CURRENT_TIMESTAMP) AS last_update
+FROM last_versions
+WHERE rn = 1
+  AND cip_code IS NOT NULL
   AND cip_code <> ''
   AND cip_code <> 'null'
   AND brand IS NOT NULL
