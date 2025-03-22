@@ -7,7 +7,16 @@ WITH raw_data AS (
     SELECT
         *
     FROM {{ ref('pharma_centre_snapshot') }}
-    WHERE dbt_valid_to IS NULL
+),
+
+last_versions AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY cip_code
+            ORDER BY updated_at DESC
+        ) AS rn
+    FROM raw_data
 )
 
 SELECT
@@ -32,8 +41,9 @@ SELECT
     nombre_d_unites, 
     indication_contre_indication,
     CURRENT_TIMESTAMP AS last_update
-FROM raw_data
-WHERE cip_code IS NOT NULL
+FROM last_versions
+WHERE rn = 1
+  AND cip_code IS NOT NULL
   AND cip_code <> ''
   AND cip_code <> 'null'
   AND brand IS NOT NULL

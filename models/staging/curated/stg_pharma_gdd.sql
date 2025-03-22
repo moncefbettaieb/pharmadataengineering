@@ -7,8 +7,18 @@ WITH raw_data AS (
     SELECT
         *
     FROM {{ ref('snap_pharma_gdd') }}
-    WHERE dbt_valid_to IS NULL
+),
+
+last_versions AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY cip_code
+            ORDER BY updated_at DESC
+        ) AS rn
+    FROM raw_data
 )
+
 
 SELECT
     cip_code,
@@ -28,8 +38,9 @@ SELECT
     processed_time,
     categorie::TEXT || ' ' || sous_categorie_1::TEXT || ' ' || sous_categorie_2::TEXT AS combined_category,
     CURRENT_TIMESTAMP AS last_update
-FROM raw_data
-WHERE cip_code IS NOT NULL
+FROM last_versions
+WHERE rn = 1
+  AND cip_code IS NOT NULL
   AND cip_code <> ''
   AND cip_code <> 'null'
   AND brand IS NOT NULL
