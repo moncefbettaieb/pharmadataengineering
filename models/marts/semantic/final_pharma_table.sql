@@ -16,8 +16,7 @@ deduplicated AS (
 )
 
 SELECT
-    *,
-    CURRENT_TIMESTAMP AS last_update
+    *
 FROM deduplicated
 WHERE cip_code IS NOT NULL
   AND cip_code <> ''

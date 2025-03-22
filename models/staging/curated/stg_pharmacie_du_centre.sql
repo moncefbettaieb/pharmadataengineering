@@ -40,7 +40,7 @@ SELECT
     nature_de_produit, 
     nombre_d_unites, 
     indication_contre_indication,
-    CURRENT_TIMESTAMP AS last_update
+    update_at AS last_update
 FROM last_versions
 WHERE rn = 1
   AND cip_code IS NOT NULL
