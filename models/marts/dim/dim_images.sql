@@ -1,6 +1,7 @@
 {{ config(
     materialized='incremental',
-    incremental_strategy='append',
+    incremental_strategy='delete+insert',
+    unique_key='cip_code || source || image_url',
     post_hook=[
         create_index(this, 'cip_code')
     ]
@@ -10,8 +11,7 @@ WITH unified AS (
     SELECT
         cip_code,
         source,
-        image_url,
-        last_update
+        image_url
     FROM {{ ref('stg_unified_images') }}
 )
 

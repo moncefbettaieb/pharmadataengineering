@@ -1,4 +1,6 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='incremental',
+    incremental_strategy='append')}}
 
 WITH max_similarity AS (
     SELECT

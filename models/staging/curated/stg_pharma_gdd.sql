@@ -1,6 +1,7 @@
 {{ config(
     materialized='incremental',
-    incremental_strategy='append'
+    incremental_strategy='delete+insert',
+    unique_key='cip_code'
 ) }}
 
 WITH raw_data AS (

@@ -24,7 +24,7 @@
         contre_indication,
         image_links,
         processed_time,
-        CAST(_ab_cdc_updated_at AS TIMESTAMP) AS update_at
+        CAST(_ab_cdc_updated_at AS TIMESTAMP) AS updated_at
     FROM {{ source('pharma_sources', 'raw_pharma_gdd') }}
 
 {% endsnapshot %}

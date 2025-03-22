@@ -1,6 +1,7 @@
 {{ config(
     materialized='incremental',
-    incremental_strategy='append'
+    incremental_strategy='delete+insert',
+    unique_key='cip_code'
 ) }}
 
 WITH raw_data AS (
@@ -40,7 +41,7 @@ SELECT
     nature_de_produit, 
     nombre_d_unites, 
     indication_contre_indication,
-    COALESCE(update_at, CURRENT_TIMESTAMP) AS last_update
+    COALESCE(updated_at, CURRENT_TIMESTAMP) AS last_update
 FROM last_versions
 WHERE rn = 1
   AND cip_code IS NOT NULL
@@ -50,8 +51,8 @@ WHERE rn = 1
   AND brand <> ''
   AND brand <> 'null'
   AND title IS NOT NULL
-  AND title <> ''
-  AND title <> 'null'
+  AND title::TEXT <> ''
+  AND title::TEXT <> 'null'
   AND categorie IS NOT NULL
-  AND categorie <> ''
-  AND categorie <> 'null'
+  AND categorie::TEXT <> ''
+  AND categorie::TEXT <> 'null'
