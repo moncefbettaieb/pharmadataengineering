@@ -3,7 +3,8 @@
     incremental_strategy='append',
     post_hook=[
         create_index(this, 'cip_code')
-    ]) }}
+    ]
+) }}
 
 WITH unified AS (
     SELECT
@@ -32,4 +33,14 @@ SELECT
     false AS downloaded,
     CURRENT_TIMESTAMP AS last_update
 FROM enumerated
+
+{% if is_incremental() %}
+-- Éviter les doublons déjà téléchargés
+WHERE (cip_code, source, image_url) NOT IN (
+    SELECT cip_code, source, image_url
+    FROM {{ this }}
+    WHERE downloaded = true
+)
+{% endif %}
+
 ORDER BY image_id

@@ -9,9 +9,25 @@
     }}
 
     SELECT
-        cip_code,
-        title,
-        brand,
+        brand, 
+        title,  
+        source,  
+        cip_code, 
+        categorie,
+        image_src, 
+        long_desc, 
+        short_desc, 
+        "Age_minimum" as age_minimum,
+        product_price, 
+        "Conditionnement" as conditionnement, 
+        processed_time, 
+        "Substance_active" as substance_active, 
+        sous_categorie_1, 
+        sous_categorie_2, 
+        sous_categorie_3, 
+        "Nature_de_produit" as nature_de_produit, 
+        "Nombre_d_unites" as nombre_d_unites, 
+        "Indication___Contre_indication" as indication_contre_indication,
         CAST(_ab_cdc_updated_at AS TIMESTAMP) as update_at
     FROM {{ source('pharma_sources', 'raw_pharmacie_du_centre') }}
 

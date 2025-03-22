@@ -5,22 +5,9 @@
 
 WITH raw_data AS (
     SELECT
-        cip_code,
-        title,
-        brand,
-        source,
-        categorie,
-        sous_categorie_1,
-        sous_categorie_2,
-        short_desc,
-        long_desc,
-        posologie,
-        composition,
-        conditionnement,
-        contre_indication,
-        image_links,
-        processed_time
-    FROM {{ source('pharma_sources', 'raw_pharma_gdd') }}
+        *
+    FROM {{ ref('snap_pharma_gdd') }}
+    WHERE dbt_valid_to IS NULL
 )
 
 SELECT
@@ -28,9 +15,9 @@ SELECT
     title,
     brand,
     source,
-    categorie,
-    sous_categorie_1,
-    sous_categorie_2,
+    categorie::TEXT AS categorie,
+    sous_categorie_1::TEXT AS sous_categorie_1,
+    sous_categorie_2::TEXT AS sous_categorie_2,
     short_desc,
     long_desc,
     posologie::TEXT AS posologie,
@@ -39,7 +26,7 @@ SELECT
     contre_indication::TEXT AS contre_indication,
     image_links,
     processed_time,
-    categorie || ' ' || sous_categorie_1 || ' ' || sous_categorie_2 AS combined_category,
+    categorie::TEXT || ' ' || sous_categorie_1::TEXT || ' ' || sous_categorie_2::TEXT AS combined_category,
     CURRENT_TIMESTAMP AS last_update
 FROM raw_data
 WHERE cip_code IS NOT NULL
