@@ -6,7 +6,7 @@
 WITH raw_data AS (
     SELECT
         *
-    FROM {{ ref('snap_pharma_gdd') }}
+    FROM {{ ref('snapshot_pharma_gdd') }}
 ),
 
 last_versions AS (
@@ -37,7 +37,7 @@ SELECT
     image_links,
     processed_time,
     categorie::TEXT || ' ' || sous_categorie_1::TEXT || ' ' || sous_categorie_2::TEXT AS combined_category,
-    update_at AS last_update
+    COALESCE(update_at, CURRENT_TIMESTAMP) AS last_update
 FROM last_versions
 WHERE rn = 1
   AND cip_code IS NOT NULL

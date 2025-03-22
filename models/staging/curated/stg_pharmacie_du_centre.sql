@@ -6,7 +6,7 @@
 WITH raw_data AS (
     SELECT
         *
-    FROM {{ ref('pharma_centre_snapshot') }}
+    FROM {{ ref('snapshot_pharma_centre') }}
 ),
 
 last_versions AS (
@@ -40,7 +40,7 @@ SELECT
     nature_de_produit, 
     nombre_d_unites, 
     indication_contre_indication,
-    update_at AS last_update
+    COALESCE(update_at, CURRENT_TIMESTAMP) AS last_update
 FROM last_versions
 WHERE rn = 1
   AND cip_code IS NOT NULL
