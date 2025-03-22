@@ -34,3 +34,4 @@ SELECT
 FROM raw_categories
 WHERE categorie IS NOT NULL
   AND categorie <> ''
+  AND categorie <> 'null'

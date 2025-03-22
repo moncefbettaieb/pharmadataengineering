@@ -74,9 +74,15 @@ deduplicated AS (
 
 SELECT *
 FROM deduplicated
-WHERE brand IS NOT NULL
+WHERE cip_code IS NOT NULL
+  AND cip_code <> ''
+  AND cip_code <> 'null'
+  AND brand IS NOT NULL
   AND brand <> ''
+  AND brand <> 'null'
   AND title IS NOT NULL
   AND title <> ''
+  AND title <> 'null'
   AND categorie IS NOT NULL
   AND categorie <> ''
+  AND categorie <> 'null'

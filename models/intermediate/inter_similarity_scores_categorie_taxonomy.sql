@@ -12,7 +12,11 @@ WITH combined_pharmacie AS (
         last_update
     FROM {{ ref('dim_pharma_categorie') }}
     WHERE categorie IS NOT NULL
-    AND combined_category IS NOT NULL
+        AND categorie <> ''
+        AND categorie <> 'null'
+        AND combined_category IS NOT NULL
+        AND combined_category <> ''
+        AND combined_category <> 'null'
 ),
 combined_taxonomy AS (
     SELECT
