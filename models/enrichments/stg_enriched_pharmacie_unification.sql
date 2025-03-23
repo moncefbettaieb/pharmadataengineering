@@ -23,8 +23,7 @@ SELECT
     dim_tx.category,
     dim_tx.sub_category1,
     dim_tx.sub_category2,
-    dim_tx.sub_category3,
-    CURRENT_TIMESTAMP AS last_update
+    dim_tx.sub_category3
 FROM unified_with_taxo utx
 LEFT JOIN {{ ref('dim_product_taxonomy') }} dim_tx
 ON utx.taxonomy_id = dim_tx.taxonomy_id
