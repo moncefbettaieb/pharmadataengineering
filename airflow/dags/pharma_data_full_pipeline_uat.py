@@ -140,7 +140,7 @@ with DAG('pharma_data_full_pipeline_uat',
 
     dbt_seed_uat = create_cloud_run_task_dbt("seed", "seed", "uat")
     dbt_snapshot_uat = create_cloud_run_task_dbt("snapshot", "snapshot", "uat")
-    dbt_run_uat = create_cloud_run_task_dbt("run", "run", "uat")
+    dbt_run_uat = create_cloud_run_task_dbt("run", "run", "uat", exclude_model="staging.curated.stg_similarity_scores_categorie_taxonomy")
     dbt_test_uat = create_cloud_run_task_dbt("test", "test", "uat")
 
     run_save_images = create_cloud_run_task(
@@ -151,7 +151,7 @@ with DAG('pharma_data_full_pipeline_uat',
     airbyte_postgre_to_firestore = AirbyteTriggerSyncOperator(
         task_id='airbyte_postgre_to_firestore_uat',
         airbyte_conn_id='airbyte_conn',
-        connection_id='fc529ca9-0be0-4359-8b65-919d7f91d2e8',
+        connection_id='ed28a48d-e6d4-41f0-8544-7eeaf2e0d30b"',
         asynchronous=False,
         timeout=3600,
         wait_seconds=3

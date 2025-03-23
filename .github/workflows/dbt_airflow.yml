@@ -55,7 +55,7 @@ jobs:
             --task-timeout=3600 \
             --set-env-vars="DBT_PROFILE=${{ secrets.DBT_PROFILE }}" \
             --set-env-vars="TARGET_ENV=uat" \
-            --args="dbt run --target uat --exclude intermediate.inter_similarity_scores_categorie_taxonomy"
+            --args="dbt run --target uat --exclude staging.curated.stg_similarity_scores_categorie_taxonomy"
 
   deploy-airflow-dags:
     runs-on: ubuntu-latest

@@ -1,9 +1,9 @@
 {{ config(
     materialized='incremental',
     incremental_strategy='delete+insert',
-    unique_key='combined_category',
+    unique_key='categorie_id',
     post_hook=[
-        create_gin_index(this, 'combined_category')
+        create_gin_index(this, 'combined_categorie')
     ]) }}
 
 WITH raw_categories AS (
@@ -28,7 +28,7 @@ SELECT
     sous_categorie_1,
     sous_categorie_2,
     sous_categorie_3,
-    categorie || ' ' || sous_categorie_1 || ' ' || sous_categorie_2 || ' ' || sous_categorie_3 as combined_category,
+    CONCAT_WS(' ', categorie, sous_categorie_1, sous_categorie_2, sous_categorie_3) as combined_categorie,
     CURRENT_TIMESTAMP AS last_update
 FROM raw_categories
 WHERE categorie IS NOT NULL

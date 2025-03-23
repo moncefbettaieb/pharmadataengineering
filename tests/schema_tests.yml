@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: final_pharma_table
+  - name: pharma_products
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns: ['cip_code']
@@ -28,6 +28,6 @@ models:
       - name: taxonomy_name
         tests:
           - not_null
-      - name: category
+      - name: taxonomy_category
         tests:
           - not_null

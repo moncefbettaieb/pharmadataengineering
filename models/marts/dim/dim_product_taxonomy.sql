@@ -2,6 +2,7 @@
     post_hook=[
         create_gin_index(this, 'combined_taxonomy')
     ]) }}
+    
 WITH base AS (
     SELECT
         CAST(taxonomy_id AS BIGINT) AS taxonomy_id, 
@@ -13,20 +14,20 @@ split_categories AS (
     SELECT
         taxonomy_id,
         taxonomy_name,
-        SPLIT_PART(taxonomy_name, '>', 1) AS category,
-        NULLIF(SPLIT_PART(taxonomy_name, '>', 2), '') AS sub_category1,
-        NULLIF(SPLIT_PART(taxonomy_name, '>', 3), '') AS sub_category2,
-        NULLIF(SPLIT_PART(taxonomy_name, '>', 4), '') AS sub_category3
+        SPLIT_PART(taxonomy_name, '>', 1) AS taxonomy_category,
+        NULLIF(SPLIT_PART(taxonomy_name, '>', 2), '') AS taxonomy_sub_category1,
+        NULLIF(SPLIT_PART(taxonomy_name, '>', 3), '') AS taxonomy_sub_category2,
+        NULLIF(SPLIT_PART(taxonomy_name, '>', 4), '') AS taxonomy_sub_category3
     FROM base
 )
 
 SELECT
     taxonomy_id,
     taxonomy_name,
-    TRIM(category) AS category,
-    TRIM(sub_category1) AS sub_category1,
-    TRIM(sub_category2) AS sub_category2,
-    TRIM(sub_category3) AS sub_category3,
-    TRIM(category) || COALESCE(' ' || TRIM(sub_category1), '') || COALESCE(' ' || TRIM(sub_category2), '') || COALESCE(' ' || TRIM(sub_category3), '') as combined_taxonomy
+    TRIM(taxonomy_category) AS taxonomy_category,
+    TRIM(taxonomy_sub_category1) AS taxonomy_sub_category1,
+    TRIM(taxonomy_sub_category2) AS taxonomy_sub_category2,
+    TRIM(taxonomy_sub_category3) AS taxonomy_sub_category3,
+    CONCAT_WS(' ', TRIM(taxonomy_category), TRIM(taxonomy_sub_category1), TRIM(taxonomy_sub_category2), TRIM(taxonomy_sub_category3)) AS combined_taxonomy
 FROM split_categories
 ORDER BY taxonomy_id

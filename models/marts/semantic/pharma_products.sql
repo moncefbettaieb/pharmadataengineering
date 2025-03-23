@@ -1,27 +1,15 @@
 {{ config(
     materialized='incremental',
     incremental_strategy='delete+insert',
-    unique_key='cip_code'
+    unique_key='cip_code',
+    post_hook=[
+        create_index(this, 'cip_code')
+    ]
 ) }}
-
-WITH enriched AS (
-    SELECT *
-    FROM {{ ref('stg_enriched_pharmacie_unification') }}
-),
-
-deduplicated AS (
-    SELECT *
-    FROM (
-        SELECT *,
-            ROW_NUMBER() OVER (PARTITION BY cip_code ORDER BY last_update DESC) AS rn
-        FROM enriched
-    ) sub
-    WHERE rn = 1
-)
 
 SELECT
     *
-FROM deduplicated
+FROM {{ ref('stg_enriched_pharmacie_unification') }}
 WHERE cip_code IS NOT NULL
   AND cip_code <> ''
   AND cip_code <> 'null'
