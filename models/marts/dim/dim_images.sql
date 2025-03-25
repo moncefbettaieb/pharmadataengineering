@@ -39,7 +39,7 @@ FROM enumerated
 WHERE (cip_code, source, image_url) NOT IN (
     SELECT cip_code, source, image_url
     FROM {{ this }}
-    WHERE downloaded = false
+    WHERE downloaded = true
 )
 {% endif %}
 
