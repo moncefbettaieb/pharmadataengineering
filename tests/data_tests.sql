@@ -2,6 +2,6 @@
 SELECT
     cip_code,
     COUNT(*) as nb
-FROM {{ ref('final_pharma_table') }}
+FROM {{ ref('pharma_products') }}
 GROUP BY 1
 HAVING COUNT(*) > 1

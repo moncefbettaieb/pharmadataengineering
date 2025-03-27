@@ -11,41 +11,41 @@ WITH combined_pharmacie AS (
         sous_categorie_1,
         sous_categorie_2,
         sous_categorie_3,
-        combined_category
+        combined_categorie
     FROM {{ ref('dim_pharma_categorie') }}
     WHERE categorie IS NOT NULL
         AND categorie <> ''
         AND categorie <> 'null'
-        AND combined_category IS NOT NULL
-        AND combined_category <> ''
-        AND combined_category <> 'null'
+        AND combined_categorie IS NOT NULL
+        AND combined_categorie <> ''
+        AND combined_categorie <> 'null'
 ),
 combined_taxonomy AS (
     SELECT
         taxonomy_id,
         taxonomy_name,
-        category,
-        sub_category1,
-        sub_category2,
-        sub_category3,
+        taxonomy_category,
+        taxonomy_sub_category1,
+        taxonomy_sub_category2,
+        taxonomy_sub_category3,
         combined_taxonomy
     FROM {{ ref('dim_product_taxonomy') }}
 )
     SELECT
         p.categorie_id,
-        p.combined_category,
+        p.combined_categorie,
         p.categorie,
         p.sous_categorie_1,
         p.sous_categorie_2,
         p.sous_categorie_3,
         t.taxonomy_id,
         t.taxonomy_name,
-        t.category,
-        t.sub_category1,
-        t.sub_category2,
-        t.sub_category3,
+        t.taxonomy_category,
+        t.taxonomy_sub_category1,
+        t.taxonomy_sub_category2,
+        t.taxonomy_sub_category3,
         t.combined_taxonomy,
-        SIMILARITY(p.combined_category, t.combined_taxonomy) AS similarity_score,
+        SIMILARITY(p.combined_categorie, t.combined_taxonomy) AS similarity_score,
         CURRENT_TIMESTAMP AS last_update
     FROM combined_pharmacie p
     CROSS JOIN combined_taxonomy t

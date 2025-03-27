@@ -8,43 +8,36 @@ WITH raw_data AS (
     SELECT
         *
     FROM {{ ref('snapshot_pharma_centre') }}
-),
-
-last_versions AS (
-    SELECT
-        *,
-        ROW_NUMBER() OVER (
-            PARTITION BY cip_code
-            ORDER BY updated_at DESC
-        ) AS rn
-    FROM raw_data
 )
 
 SELECT
-    brand, 
-    title::TEXT AS title,  
-    source,  
-    cip_code, 
-    categorie::TEXT AS categorie,
-    image_src, 
-    long_desc, 
-    short_desc, 
-    age_minimum,
+    TRIM(BOTH '"' FROM cip_code) AS cip_code,
+    TRIM(BOTH '"' FROM title) AS title,
+    TRIM(BOTH '"' FROM brand) AS brand,
+    TRIM(BOTH '"' FROM categorie) AS categorie,
+    TRIM(BOTH '"' FROM sous_categorie_1) AS sous_categorie_1,
+    TRIM(BOTH '"' FROM sous_categorie_2) AS sous_categorie_2,
+    TRIM(BOTH '"' FROM sous_categorie_3) AS sous_categorie_3,
+    CONCAT_WS(' ', TRIM(BOTH '"' FROM categorie::TEXT), TRIM(BOTH '"' FROM sous_categorie_1::TEXT), TRIM(BOTH '"' FROM sous_categorie_2::TEXT), TRIM(BOTH '"' FROM sous_categorie_3::TEXT)) AS combined_categorie,
+    TRIM(BOTH '"' FROM long_desc) AS long_desc,
+    TRIM(BOTH '"' FROM short_desc) AS short_desc,
+    TRIM(BOTH '"' FROM label) AS label,
+    TRIM(BOTH '"' FROM volume) AS volume,
+    TRIM(BOTH '"' FROM age_minimum) AS age_minimum,
+    TRIM(BOTH '"' FROM conditionnement) AS conditionnement,
+    TRIM(BOTH '"' FROM specificites) AS specificites,
+    TRIM(BOTH '"' FROM substance_active) AS substance_active,
+    TRIM(BOTH '"' FROM nature_de_produit) AS nature_de_produit,
+    TRIM(BOTH '"' FROM nombre_d_unites) AS nombre_d_unites,
+    TRIM(BOTH '"' FROM indication_contre_indication) AS indication_contre_indication,
     product_price, 
-    conditionnement, 
     processed_time, 
-    substance_active, 
-    sous_categorie_1::TEXT AS sous_categorie_1, 
-    sous_categorie_2::TEXT AS sous_categorie_2, 
-    sous_categorie_3::TEXT AS sous_categorie_3,
-    CONCAT(categorie::TEXT, ' ', sous_categorie_1::TEXT, ' ', sous_categorie_2::TEXT, ' ', sous_categorie_3::TEXT) AS combined_category,
-    nature_de_produit, 
-    nombre_d_unites, 
-    indication_contre_indication,
+    source,         
+    image_src,
+    url_source,
     COALESCE(updated_at, CURRENT_TIMESTAMP) AS last_update
-FROM last_versions
-WHERE rn = 1
-  AND cip_code IS NOT NULL
+FROM raw_data
+WHERE cip_code IS NOT NULL
   AND cip_code <> ''
   AND cip_code <> 'null'
   AND brand IS NOT NULL
