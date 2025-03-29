@@ -1,7 +1,10 @@
 {{ config(
     materialized='incremental',
     incremental_strategy='delete+insert',
-    unique_key='cip_code'
+    unique_key='cip_code',
+    post_hook=[
+        create_index(this, 'cip_code')
+    ]
 ) }}
 
 SELECT
