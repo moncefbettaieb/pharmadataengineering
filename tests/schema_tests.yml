@@ -28,6 +28,6 @@ models:
       - name: taxonomy_name
         tests:
           - not_null
-      - name: category
+      - name: taxonomy_category
         tests:
           - not_null
