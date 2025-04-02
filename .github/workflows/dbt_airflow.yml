@@ -45,14 +45,14 @@ jobs:
       - name: Build and push Docker image
         run: |
           gcloud auth configure-docker europe-west9-docker.pkg.dev
-          docker build -t europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow:dev .
-          docker push europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow:dev
+          docker build -t europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow-dev:latest .
+          docker push europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow-dev:latest
 
       - name: Deploy Cloud Run Job
         run: |
           gcloud run jobs delete dbt-airflow-job-dev --region=${{ vars.GCP_REGION }} --quiet || true
           gcloud run jobs create dbt-airflow-job-dev \
-            --image=europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow:dev \
+            --image=europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow-dev:latest \
             --region=${{ vars.GCP_REGION }} \
             --task-timeout=3600 \
             --set-env-vars TARGET_ENV=dev \
@@ -103,14 +103,14 @@ jobs:
       - name: Build and push Docker image
         run: |
           gcloud auth configure-docker europe-west9-docker.pkg.dev
-          docker build -t europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow:uat .
-          docker push europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow:uat
+          docker build -t europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow-uat:latest .
+          docker push europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow-uat:latest
 
       - name: Deploy Cloud Run Job
         run: |
           gcloud run jobs delete dbt-airflow-job-uat --region=${{ vars.GCP_REGION }} --quiet || true
           gcloud run jobs create dbt-airflow-job-uat \
-            --image=europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow:uat \
+            --image=europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow-uat:latest \
             --region=${{ vars.GCP_REGION }} \
             --task-timeout=3600 \
             --set-env-vars TARGET_ENV=uat \
@@ -161,14 +161,14 @@ jobs:
       - name: Build and push Docker image
         run: |
           gcloud auth configure-docker europe-west9-docker.pkg.dev
-          docker build -t europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow:prod .
-          docker push europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow:prod
+          docker build -t europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow-prod:latest .
+          docker push europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow-prod:latest
 
       - name: Deploy Cloud Run Job
         run: |
           gcloud run jobs delete dbt-airflow-job-prod --region=${{ vars.GCP_REGION }} --quiet || true
           gcloud run jobs create dbt-airflow-job-prod \
-            --image=europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow:prod \
+            --image=europe-west9-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/cloud-run-source-deploy/dbt-airflow-prod:latest \
             --region=${{ vars.GCP_REGION }} \
             --task-timeout=3600 \
             --set-env-vars TARGET_ENV=prod \
