@@ -14,49 +14,6 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-@provide_session
-def get_last_pharma_scrapper_success(session=None, **context):
-    """
-    Récupère la dernière exécution réussie du task 'pharma_scrapper_uat', soustrait 3 jours.
-    Retourne une date au format '%d-%m-%Y' ou None si aucune exécution réussie.
-    """
-    try:
-        # Récupérer la dernière exécution réussie du task
-        result = (
-            session.query(TaskInstance.start_date)  # Utilisation de `start_date` au lieu de `execution_date`
-            .filter(
-                TaskInstance.dag_id == "crawler_pipeline",
-                TaskInstance.task_id == "pharma_scrapper_uat",
-                TaskInstance.state == "success"
-            )
-            .order_by(TaskInstance.start_date.desc())  # Trier par la plus récente exécution
-            .limit(1)
-            .scalar()
-        )
-
-        if result:
-            date_str = (result - timedelta(days=3)).strftime("%d-%m-%Y")
-            print(f"[DEBUG] Dernière exécution réussie trouvée : {date_str}")
-            return date_str
-
-        print("[DEBUG] Aucune exécution trouvée, retour de None")
-        return None  
-
-    except Exception as e:
-        print(f"[ERROR] Problème SQLAlchemy : {e}")
-        return None
-
-def clean_execution_date(**kwargs):
-    """Récupère execution_date depuis XCom et assure que "None" devient None."""
-    execution_date = kwargs['ti'].xcom_pull(task_ids='get_last_pharma_scrapper_success')
-
-    if execution_date in [None, "None", "", 'None']:
-        print("[DEBUG] execution_date est vide ou 'None', retour None")
-        return None  
-
-    print(f"[DEBUG] execution_date après nettoyage : {execution_date}")
-    return execution_date
-
 def create_cloud_run_task(task_id, command, target, execution_date=None):
     """
     Crée une tâche Cloud Run sans inclure execution_date si elle est None ou "None".
