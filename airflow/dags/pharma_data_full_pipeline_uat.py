@@ -4,6 +4,7 @@ from airflow.models import TaskInstance
 from airflow.providers.google.cloud.operators.cloud_run import CloudRunExecuteJobOperator
 from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperator
 from airflow.operators.python import PythonOperator
+from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime, timedelta
 
 default_args = {
@@ -103,20 +104,6 @@ with DAG('pharma_data_full_pipeline_uat',
          schedule_interval='@daily',
          catchup=False) as dag:
 
-    get_exec_date = PythonOperator(
-        task_id="get_last_pharma_scrapper_success_uat",
-        python_callable=get_last_pharma_scrapper_success,
-        provide_context=True
-    )
-
-    clean_exec_date = PythonOperator(
-        task_id="clean_execution_date_uat",
-        python_callable=clean_execution_date,
-        provide_context=True
-    )
-
-    execution_date = "{{ ti.xcom_pull(task_ids='clean_execution_date') }}"
-
     save_sitemaps_links_to_mongo = create_cloud_run_task(
         "save_sitemaps_links_to_mongo", 
         "modules.scrappers.save_sitemaps_links_to_mongo", 
@@ -134,8 +121,7 @@ with DAG('pharma_data_full_pipeline_uat',
     run_pharma_scrapper = create_cloud_run_task(
         "pharma_scrapper",
         "modules.scrappers.pharma_scrapper",
-        "uat",
-        execution_date=execution_date
+        "uat"
     )
 
     dbt_seed_uat = create_cloud_run_task_dbt("seed", "seed", "uat")
@@ -157,4 +143,13 @@ with DAG('pharma_data_full_pipeline_uat',
         wait_seconds=3
     )
 
-    save_sitemaps_links_to_mongo >> get_exec_date >> clean_exec_date >> run_pharma_scrapper >> airbyte_mongo_to_postgre >> dbt_seed_uat >> dbt_snapshot_uat >> dbt_run_uat >> dbt_test_uat >> run_save_images >> airbyte_postgre_to_firestore
+    stop_vm_task = CloudRunExecuteJobOperator(
+    task_id="stop_uat_vm",
+    project_id='fournisseur-data',
+    region='europe-west9',
+    job_name='stop-vm-job',
+    gcp_conn_id='google_cloud_default',
+    trigger_rule='all_done'
+    )
+
+    save_sitemaps_links_to_mongo >> run_pharma_scrapper >> airbyte_mongo_to_postgre >> dbt_seed_uat >> dbt_snapshot_uat >> dbt_run_uat >> dbt_test_uat >> run_save_images >> airbyte_postgre_to_firestore >> stop_vm_task
