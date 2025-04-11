@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime(2023, 1, 1),
+    'start_date': datetime(2023, 1, 1, 22, 0, 0),
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
 }
@@ -89,7 +89,7 @@ def create_cloud_run_task_dbt(task_id, command, target, exclude_model=None):
         task_id=f"{task_id}_{target}",
         project_id='fournisseur-data',
         region='europe-west9', 
-        job_name='dbt-airflow-job',
+        job_name='dbt-airflow-job-prod',
         overrides={
             "container_overrides": [{
                 "args": args

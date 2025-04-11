@@ -6,4 +6,3 @@ dbt_packages/*
 .DS_Store
 seeds/taxonomy-with-ids.fr-FR.txt
 logs/dbt.log
-profiles.yml

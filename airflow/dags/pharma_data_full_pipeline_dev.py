@@ -89,7 +89,7 @@ def create_cloud_run_task_dbt(task_id, command, target, exclude_model=None):
         task_id=f"{task_id}_{target}",
         project_id='fournisseur-data',
         region='europe-west9', 
-        job_name='dbt-airflow-job',
+        job_name='dbt-airflow-job-dev',
         overrides={
             "container_overrides": [{
                 "args": args

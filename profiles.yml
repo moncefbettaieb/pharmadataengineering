@@ -2,7 +2,7 @@ pharma_project:
   outputs:
     dev:
       type: postgres
-      host: 34.163.120.6
+      host: 34.163.27.186
       user: pharma_user
       password: salgado
       dbname: pharma_data_engineering
@@ -11,21 +11,20 @@ pharma_project:
       threads: 4
     uat:
       type: postgres
-      host: 34.163.120.6
+      host: 34.163.27.186
       user: pharma_user
       password: salgado
       dbname: pharma_data_engineering
       schema: uat
       port: 5432
       threads: 4
-# TODO: modify prod db connection
     prod:
       type: postgres
-      host: 34.163.120.6
+      host: 34.163.27.186
       user: pharma_user
       password: salgado
       dbname: pharma_data_engineering
       schema: prod
       port: 5432
       threads: 4
-  target: dev
+  target: uat
