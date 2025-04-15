@@ -12,7 +12,7 @@ WITH unified AS (
         cip_code,
         source,
         image_url
-    FROM {{ ref('stg_unified_images') }}
+    FROM {{ ref('int_unified_images') }}
 )
 
 , enumerated AS (

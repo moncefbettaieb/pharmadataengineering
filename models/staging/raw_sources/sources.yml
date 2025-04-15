@@ -11,3 +11,7 @@ sources:
         identifier: raw_pharmacie_du_centre
         description: "Table brute scrappée (pharmacie_du_centre)"
 
+      - name: mycollection
+        identifier: mycollection
+        description: "Table brute provennant de la collection mycollection (api)"
+

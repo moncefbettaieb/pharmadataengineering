@@ -140,7 +140,7 @@ with DAG('pharma_data_full_pipeline_dev',
 
     dbt_seed_dev = create_cloud_run_task_dbt("seed", "seed", "dev")
     dbt_snapshot_dev = create_cloud_run_task_dbt("snapshot", "snapshot", "dev")
-    dbt_run_dev = create_cloud_run_task_dbt("run", "run", "dev", exclude_model="staging.curated.stg_similarity_scores_categorie_taxonomy")
+    dbt_run_dev = create_cloud_run_task_dbt("run", "run", "dev", exclude_model="staging.curated.int_similarity_scores_categorie_taxonomy")
     dbt_test_dev = create_cloud_run_task_dbt("test", "test", "dev")
 
     run_save_images = create_cloud_run_task(

@@ -7,7 +7,7 @@ WITH codes AS (
     SELECT
         ROW_NUMBER() OVER (ORDER BY cip_code) AS code_id,
         cip_code
-    FROM {{ ref('stg_pharmacie_unification') }}
+    FROM {{ ref('int_pharmacie_unification') }}
 )
 
 SELECT

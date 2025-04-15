@@ -9,7 +9,7 @@
 
 SELECT
     *
-FROM {{ ref('stg_enriched_pharmacie_unification') }}
+FROM {{ ref('int_enriched_pharmacie_unification') }}
 WHERE cip_code IS NOT NULL
   AND cip_code <> ''
   AND cip_code <> 'null'

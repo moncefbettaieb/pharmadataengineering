@@ -56,7 +56,7 @@ jobs:
             --region=${{ vars.GCP_REGION }} \
             --task-timeout=3600 \
             --set-env-vars TARGET_ENV=dev \
-            --args="dbt run --target dev --exclude staging.curated.stg_similarity_scores_categorie_taxonomy"
+            --args="dbt run --target dev --exclude staging.curated.int_similarity_scores_categorie_taxonomy"
 
       - name: Sync DAGs to Cloud Storage
         run: |
@@ -114,7 +114,7 @@ jobs:
             --region=${{ vars.GCP_REGION }} \
             --task-timeout=3600 \
             --set-env-vars TARGET_ENV=uat \
-            --args="dbt run --target uat --exclude staging.curated.stg_similarity_scores_categorie_taxonomy"
+            --args="dbt run --target uat --exclude staging.curated.int_similarity_scores_categorie_taxonomy"
 
       - name: Sync DAGs to Cloud Storage
         run: |
