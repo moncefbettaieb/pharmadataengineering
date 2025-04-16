@@ -3,18 +3,30 @@ from airflow.providers.google.cloud.operators.cloud_run import CloudRunExecuteJo
 from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperator
 from airflow.operators.python import PythonOperator
 from airflow.hooks.base import BaseHook
+from airflow.configuration import conf
 from datetime import datetime, timedelta
 import logging
 import requests
 import smtplib
 from email.mime.text import MIMEText
 
+def get_airflow_url():
+    """Récupère l'URL de base d'Airflow depuis la configuration"""
+    base_url = conf.get('webserver', 'base_url', fallback='http://localhost:8080')
+    return base_url.rstrip('/')
+
 def slack_failure_alert(context):
     slack_webhook = BaseHook.get_connection('slack_alerts').password
     dag_id = context.get('dag').dag_id
     task_id = context.get('task_instance').task_id
     execution_date = context.get('execution_date')
-    log_url = context.get('task_instance').log_url
+    
+    # Construire l'URL des logs avec l'URL de base correcte
+    task_instance = context.get('task_instance')
+    log_url = task_instance.log_url
+    if log_url and log_url.startswith('http://localhost'):
+        base_url = get_airflow_url()
+        log_url = f"{base_url}{log_url[len('http://localhost:8080'):]}"
 
     message = f"""
     *:pill: PHARMA PIPELINE ALERT :rotating_light:*
@@ -32,7 +44,13 @@ def slack_success_alert(context):
     dag_id = context.get('dag').dag_id
     task_id = context.get('task_instance').task_id
     execution_date = context.get('execution_date')
-    log_url = context.get('task_instance').log_url
+    
+    # Construire l'URL des logs avec l'URL de base correcte
+    task_instance = context.get('task_instance')
+    log_url = task_instance.log_url
+    if log_url and log_url.startswith('http://localhost'):
+        base_url = get_airflow_url()
+        log_url = f"{base_url}{log_url[len('http://localhost:8080'):]}"
 
     message = f"""
     :tada: *PHARMA PIPELINE - SUCCÈS !* :white_check_mark:
@@ -44,24 +62,44 @@ def slack_success_alert(context):
     """
     requests.post(slack_webhook, json={"text": message})
 
+def send_email_with_retry(sender, recipient, subject, body, smtp_conn, max_retries=3):
+    """Envoie un email avec retry et gestion des erreurs"""
+    for attempt in range(max_retries):
+        try:
+            msg = MIMEText(body)
+            msg['Subject'] = subject
+            msg['From'] = sender
+            msg['To'] = recipient
+
+            with smtplib.SMTP(smtp_conn.host, smtp_conn.port) as server:
+                server.starttls()
+                # Tentative de connexion sans authentification si l'auth n'est pas supportée
+                try:
+                    if smtp_conn.login and smtp_conn.password:
+                        server.login(smtp_conn.login, smtp_conn.password)
+                except smtplib.SMTPNotSupportedError:
+                    logging.warning("SMTP AUTH non supporté, tentative d'envoi sans authentification")
+                server.send_message(msg)
+            return True
+        except Exception as e:
+            logging.error(f"Tentative {attempt + 1} échouée: {str(e)}")
+            if attempt == max_retries - 1:
+                logging.error(f"Échec de l'envoi d'email après {max_retries} tentatives")
+                raise
+    return False
+
 def send_success_email(task_id, dag_id, execution_date):
     smtp_conn = BaseHook.get_connection("smtp_default")
-
-    sender = smtp_conn.login
-    recipient = "mbettaieb@gcdconsulting.fr"
-    smtp_host = smtp_conn.host
-    smtp_port = smtp_conn.port
-    smtp_password = smtp_conn.password
-
-    msg = MIMEText(f"La tâche `{task_id}` du DAG `{dag_id}` a réussi à {execution_date}.")
-    msg['Subject'] = f"[Airflow] ✅ Succès: {dag_id}.{task_id}"
-    msg['From'] = sender
-    msg['To'] = recipient
-
-    with smtplib.SMTP(smtp_host, smtp_port) as server:
-        server.starttls()
-        server.login(sender, smtp_password)
-        server.send_message(msg)
+    try:
+        send_email_with_retry(
+            sender=smtp_conn.login,
+            recipient="mbettaieb@gcdconsulting.fr",
+            subject=f"[Airflow] ✅ Succès: {dag_id}.{task_id}",
+            body=f"La tâche `{task_id}` du DAG `{dag_id}` a réussi à {execution_date}.",
+            smtp_conn=smtp_conn
+        )
+    except Exception as e:
+        logging.error(f"Échec de l'envoi d'email: {str(e)}")
 
 default_args = {
     'owner': 'airflow',
@@ -88,7 +126,11 @@ def create_cloud_run_operator(task_id, command, target, job_name, execution_date
     if execution_date not in [None, "None", "", 'None']:
         args.append(execution_date)
     if exclude_model:
-        args.extend(["--exclude", exclude_model])
+        if isinstance(exclude_model, str):
+            args.extend(["--exclude", exclude_model])
+        elif isinstance(exclude_model, list):
+            for model in exclude_model:
+                args.extend(["--exclude", model])
     
     log_args(task_id, args)
     
@@ -136,7 +178,16 @@ with DAG('pharma_data_full_pipeline_uat',
 
     dbt_seed_uat = create_cloud_run_operator("seed", "seed", "uat", job_name='dbt-airflow-job-uat')
     dbt_snapshot_uat = create_cloud_run_operator("snapshot", "snapshot", "uat", job_name='dbt-airflow-job-uat')
-    dbt_run_uat = create_cloud_run_operator("run", "run", "uat", job_name='dbt-airflow-job-uat', exclude_model="staging.curated.int_similarity_scores_categorie_taxonomy")
+    dbt_run_uat = create_cloud_run_operator(
+        "run", 
+        "run", 
+        "uat", 
+        job_name='dbt-airflow-job-uat', 
+        exclude_model=[
+            "staging.curated.int_similarity_scores_categorie_taxonomy",
+            "staging.curated.stg_api_service_*"
+        ]
+    )
     dbt_test_uat = create_cloud_run_operator("test", "test", "uat", job_name='dbt-airflow-job-uat')
 
     run_save_images = create_cloud_run_operator(
@@ -149,7 +200,7 @@ with DAG('pharma_data_full_pipeline_uat',
     airbyte_postgre_to_firestore = AirbyteTriggerSyncOperator(
         task_id='airbyte_postgre_to_firestore_uat',
         airbyte_conn_id='airbyte_conn',
-        connection_id='ed28a48d-e6d4-41f0-8544-7eeaf2e0d30b"',
+        connection_id='ed28a48d-e6d4-41f0-8544-7eeaf2e0d30b',
         asynchronous=False,
         timeout=3600,
         wait_seconds=3
