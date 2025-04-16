@@ -1,8 +1,8 @@
 .user.yml
-logs/dbt.log
 target/*
 package-lock.yml
 dbt_packages/*
 .DS_Store
 seeds/taxonomy-with-ids.fr-FR.txt
 logs/dbt.log
+.vscode/settings.json
