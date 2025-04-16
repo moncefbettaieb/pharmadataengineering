@@ -3,7 +3,7 @@ name: DBT + Airflow CI/CD
 on:
   push:
     branches:
-      - '**'             # Toutes les branches
+      - "**" # Toutes les branches
   pull_request:
     branches:
       - develop
@@ -39,7 +39,7 @@ jobs:
                 dbname: ${{ vars.DBT_DB }}
                 schema: dev
                 port: 5432
-                threads: 4
+                threads: 16
           EOF
 
       - name: Build and push Docker image
@@ -97,7 +97,7 @@ jobs:
                 dbname: ${{ vars.DBT_DB }}
                 schema: uat
                 port: 5432
-                threads: 4
+                threads: 16
           EOF
 
       - name: Build and push Docker image
@@ -155,7 +155,7 @@ jobs:
                 dbname: ${{ vars.DBT_DB }}
                 schema: prod
                 port: 5432
-                threads: 4
+                threads: 16
           EOF
 
       - name: Build and push Docker image

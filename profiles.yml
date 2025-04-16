@@ -8,7 +8,7 @@ pharma_project:
       dbname: pharma_data_engineering
       schema: dev
       port: 5432
-      threads: 4
+      threads: 16
     uat:
       type: postgres
       host: 34.163.27.186
@@ -17,7 +17,7 @@ pharma_project:
       dbname: pharma_data_engineering
       schema: uat
       port: 5432
-      threads: 4
+      threads: 16
     prod:
       type: postgres
       host: 34.163.27.186
@@ -26,5 +26,5 @@ pharma_project:
       dbname: pharma_data_engineering
       schema: prod
       port: 5432
-      threads: 4
+      threads: 16
   target: uat

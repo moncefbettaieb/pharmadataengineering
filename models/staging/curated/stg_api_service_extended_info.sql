@@ -9,6 +9,7 @@
 
 select
     id,
+    doc->>'_id' as doc_id,
     doc->'raw_data'->'prices'->>'tfr' as prices_tfr,
     -- Raw data
     doc->'raw_data'->'deletedDate' as deletedDate,
